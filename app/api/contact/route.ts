@@ -16,7 +16,6 @@ export async function POST(request: Request) {
     const port = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : undefined;
     const user = process.env.SMTP_USER;
     const pass = process.env.SMTP_PASS;
-    const from = process.env.SMTP_FROM || `no-reply@${process.env.NEXT_PUBLIC_SITE_DOMAIN || 'example.com'}`;
 
     // Validate that required SMTP env vars exist and report which are missing (without revealing values).
     const required = [
@@ -31,22 +30,27 @@ export async function POST(request: Request) {
     }
 
     const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465, // true for 465, false for other ports
-      auth: {
-        user,
-        pass,
-      },
-    });
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: process.env.EMAIL_SECURE === 'true',
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
-    const mailOptions = {
-      from: `${name} <${from}>`,
-      to: 'Somebosnian@gmail.com',
-      subject: `Website inquiry from ${name}`,
-      text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-      html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><hr/><p>${message.replace(/\n/g, '<br/>')}</p>`,
-    };
+const mailOptions = {
+  from: process.env.SMTP_FROM,      // always your Gmail
+  to: process.env.CONTACT_RECIPIENT,
+  replyTo: email,                   // user's email
+  subject: `Website inquiry from ${name}`,
+  text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+  html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><hr/><p>${message.replace(/\n/g, '<br/>')}</p>`,
+};
+
+const info = await transporter.sendMail(mailOptions);
+console.log('Email sent:', info);
+
 
     await transporter.sendMail(mailOptions);
 
