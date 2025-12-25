@@ -48,10 +48,6 @@ const mailOptions = {
   html: `<p><strong>Name:</strong> ${name}</p><p><strong>Email:</strong> ${email}</p><hr/><p>${message.replace(/\n/g, '<br/>')}</p>`,
 };
 
-const info = await transporter.sendMail(mailOptions);
-console.log('Email sent:', info);
-
-
     await transporter.sendMail(mailOptions);
 
     return NextResponse.json({ ok: true });
