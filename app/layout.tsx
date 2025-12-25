@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "Royal Kitchen Cabinets",
   description: "Providing Quality Kitchen Cabinets Since 2024",
   icons: {
-    icon: './favicon.png', // or '/favicon.png'
+    icon: '/favicon.png', // or '/favicon.png'
   },
 };
 
