@@ -44,8 +44,9 @@ export async function POST(request: Request) {
     await transporter.sendMail(mailOptions);
 
     return NextResponse.json({ ok: true });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Contact API error:', err);
-    return NextResponse.json({ error: err?.message || 'Unknown error' }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: message || 'Unknown error' }, { status: 500 });
   }
 }

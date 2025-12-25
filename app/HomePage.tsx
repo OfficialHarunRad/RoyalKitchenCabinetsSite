@@ -446,8 +446,9 @@ export default function HomePage() {
                   setContactName('');
                   setContactEmail('');
                   setContactMessage('');
-                } catch (err: any) {
-                  setContactError(err?.message || 'An error occurred while sending');
+                } catch (err: unknown) {
+                  const message = err instanceof Error ? err.message : String(err);
+                  setContactError(message || 'An error occurred while sending');
                 } finally {
                   setContactLoading(false);
                 }
