@@ -19,11 +19,11 @@ export async function POST(request: Request) {
     const from = process.env.SMTP_FROM || `no-reply@${process.env.NEXT_PUBLIC_SITE_DOMAIN || 'example.com'}`;
 
     console.log({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  user: process.env.SMTP_USER,
-  pass: process.env.SMTP_PASS
-});
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    });
 
     // Validate that required SMTP env vars exist and report which are missing (without revealing values).
     const required = [
