@@ -18,9 +18,16 @@ export async function POST(request: Request) {
     const pass = process.env.SMTP_PASS;
     const from = process.env.SMTP_FROM || `no-reply@${process.env.NEXT_PUBLIC_SITE_DOMAIN || 'example.com'}`;
 
-    if (!host || !port || !user || !pass) {
-      // If no SMTP configured, return helpful error.
-      return NextResponse.json({ error: 'SMTP not configured. Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS in environment.' }, { status: 500 });
+    // Validate that required SMTP env vars exist and report which are missing (without revealing values).
+    const required = [
+      ['SMTP_HOST', host],
+      ['SMTP_PORT', port],
+      ['SMTP_USER', user],
+      ['SMTP_PASS', pass],
+    ];
+    const missing = required.filter(([, v]) => v === undefined || v === null || v === '').map(([k]) => k);
+    if (missing.length > 0) {
+      return NextResponse.json({ error: `SMTP not configured. Missing: ${missing.join(', ')}` }, { status: 500 });
     }
 
     const transporter = nodemailer.createTransport({
