@@ -56,6 +56,12 @@ function HeroCarousel() {
 
 export default function HomePage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [contactName, setContactName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
+  const [contactLoading, setContactLoading] = useState(false);
+  const [contactSuccess, setContactSuccess] = useState<string | null>(null);
+  const [contactError, setContactError] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans">
@@ -64,7 +70,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           {/* Left Side - Logo and Company Name */}
           <div className="flex items-center gap-4">
-            <div className="relative h-16 w-16">
+            <div className="relative h-12 w-12 md:h-16 md:w-16">
               <Image
                 src="/RKC_Icon.svg"
                 alt="Royal Kitchen Cabinets"
@@ -74,7 +80,7 @@ export default function HomePage() {
               />
             </div>
             <div className="border-l border-[#e0ba6c]/20 pl-4">
-              <h1 className="text-lg font-serif tracking-wider text-white">
+              <h1 className="text-base md:text-lg font-serif tracking-wider text-white">
                 ROYAL KITCHEN CABINETS
               </h1>
               <p className="text-xs text-white font-mono mt-0.5">EST. 2024</p>
@@ -208,7 +214,7 @@ export default function HomePage() {
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-neutral-950 to-transparent h-1/3 z-10" />
-        <div className="absolute bottom-8 left-8 z-20 text-sm text-[#e0ba6c]">
+        <div className="absolute bottom-8 left-8 z-20 text-sm text-[#e0ba6c] hidden sm:block">
           ← Drag to rotate | Scroll to zoom →
         </div>
 
@@ -216,18 +222,18 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-2xl"
+            className="max-w-2xl mx-auto sm:mx-0 text-center sm:text-left"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#e0ba6c] to-[#d1ab5d]">
                 Custom Crafted
               </span>{" "}
               Excellence
             </h2>
-            <p className="text-neutral-400 mb-6 text-lg">
+            <p className="text-neutral-400 mb-6 text-base sm:text-lg">
               Where exceptional materials meet timeless design.
             </p>
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-col sm:flex-row">
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
@@ -236,7 +242,7 @@ export default function HomePage() {
                     .getElementById("contact")
                     ?.scrollIntoView({ behavior: "smooth" })
                 }
-                className="bg-[#e0ba6c] hover:bg-[#d1ab5d] text-neutral-950 font-medium px-6 py-3 rounded-lg flex items-center gap-2 text-sm"
+                className="bg-[#e0ba6c] hover:bg-[#d1ab5d] text-neutral-950 font-medium px-6 py-3 rounded-lg flex items-center gap-2 text-sm w-full sm:w-auto"
               >
                 Begin Design Consultation <FiChevronRight />
               </motion.button>
@@ -248,7 +254,7 @@ export default function HomePage() {
                     .getElementById("gallery")
                     ?.scrollIntoView({ behavior: "smooth" })
                 }
-                className="border border-neutral-700 hover:border-[#e0ba6c]/50 hover:text-[#e0ba6c] font-medium px-6 py-3 rounded-lg text-sm"
+                className="border border-neutral-700 hover:border-[#e0ba6c]/50 hover:text-[#e0ba6c] font-medium px-6 py-3 rounded-lg text-sm w-full sm:w-auto"
               >
                 View Portfolio
               </motion.button>
@@ -419,9 +425,38 @@ export default function HomePage() {
 
             <div className="bg-neutral-950 border border-neutral-800 rounded-lg p-6">
               <h3 className="text-lg font-medium mb-6">Contact Form</h3>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={async (e) => {
+                e.preventDefault();
+                setContactError(null);
+                setContactSuccess(null);
+                if (!contactName.trim() || !contactEmail.trim() || !contactMessage.trim()) {
+                  setContactError("Please fill out all fields.");
+                  return;
+                }
+                setContactLoading(true);
+                try {
+                  const res = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: contactName, email: contactEmail, message: contactMessage })
+                  });
+                  const data = await res.json();
+                  if (!res.ok) throw new Error(data?.error || data?.message || 'Failed to send');
+                  setContactSuccess('Message sent — we will respond shortly.');
+                  setContactName('');
+                  setContactEmail('');
+                  setContactMessage('');
+                } catch (err: any) {
+                  setContactError(err?.message || 'An error occurred while sending');
+                } finally {
+                  setContactLoading(false);
+                }
+              }}>
                 <div>
                   <input
+                    name="name"
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
                     type="text"
                     placeholder="Name"
                     className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#e0ba6c]/50"
@@ -429,6 +464,9 @@ export default function HomePage() {
                 </div>
                 <div>
                   <input
+                    name="email"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
                     type="email"
                     placeholder="Email"
                     className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#e0ba6c]/50"
@@ -436,19 +474,31 @@ export default function HomePage() {
                 </div>
                 <div>
                   <textarea
+                    name="message"
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
                     placeholder="Project Details"
                     rows={4}
                     className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#e0ba6c]/50"
                   />
                 </div>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  className="w-full bg-[#e0ba6c] hover:bg-[#d1ab5d] text-neutral-950 font-medium py-2.5 px-6 rounded-lg text-sm"
-                >
-                  Submit Inquiry
-                </motion.button>
+                <div>
+                  {contactError && (
+                    <p className="text-sm text-red-400 mb-2">{contactError}</p>
+                  )}
+                  {contactSuccess && (
+                    <p className="text-sm text-green-400 mb-2">{contactSuccess}</p>
+                  )}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    disabled={contactLoading}
+                    className="w-full bg-[#e0ba6c] hover:bg-[#d1ab5d] text-neutral-950 font-medium py-2.5 px-6 rounded-lg text-sm disabled:opacity-60"
+                  >
+                    {contactLoading ? 'Sending…' : 'Submit Inquiry'}
+                  </motion.button>
+                </div>
               </form>
             </div>
           </div>

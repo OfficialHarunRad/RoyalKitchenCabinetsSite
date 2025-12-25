@@ -8,7 +8,7 @@ export default function PdfViewer({ file, height = "80vh" }: { file: string; hei
   // evaluation issues (DOMMatrix) and is very reliable across environments.
   return (
     <div className="w-full" style={{ height }}>
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-2 flex-col sm:flex-row gap-2">
         <div className="text-sm text-neutral-300">PDF Preview</div>
         <div className="flex gap-2">
           <a
@@ -33,12 +33,7 @@ export default function PdfViewer({ file, height = "80vh" }: { file: string; hei
 
       <div className="w-full h-full bg-neutral-950 border border-neutral-800 rounded-xl overflow-hidden">
         {/* Primary viewer: iframe (works in modern browsers) */}
-        <iframe
-          src={file}
-          title="PDF Viewer"
-          className="w-full h-full"
-          style={{ border: "none", minHeight: height }}
-        />
+        <iframe src={file} title="PDF Viewer" className="w-full h-[60vh] sm:h-[80vh] md:h-[80vh]" style={{ border: "none" }} />
 
         {/* Fallback for browsers that don't show PDFs in an iframe */}
         <div style={{ display: "none" }}>
