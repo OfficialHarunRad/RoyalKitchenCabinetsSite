@@ -299,10 +299,6 @@ export default function HomePage() {
                 title: "Dovetail Joinery",
                 desc: "Time-tested construction methods",
               },
-              {
-                title: "Lifetime Warranty",
-                desc: "Guaranteed to last for generations",
-              },
             ].map((feature, index) => (
               <motion.div
                 key={index}
@@ -417,7 +413,7 @@ export default function HomePage() {
                   </div>
                   <div>
                     <p className="text-neutral-400 text-sm">Address</p>
-                    <p>3544 NE Antioch RD</p>
+                    <p>North Kansas City, Missouri</p>
                   </div>
                 </div>
               </div>
