@@ -365,7 +365,10 @@ export default function HomePage() {
             <div className="w-16 h-px bg-[#e0ba6c]/50 mx-auto" />
           </div>
 
-          <PdfViewer file="/Royal_Kitchen_Cabinets_Product_Catalog.pdf" />
+          <div className="space-y-8">
+            <PdfViewer file="/Royal_Kitchen_Cabinets_Product_Catalog.pdf" />
+            <PdfViewer file="/Spec Book 2025 - Slim Shaker.pdf" />
+          </div>
         </div>
       </section>
 
